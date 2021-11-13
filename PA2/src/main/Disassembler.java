@@ -10,6 +10,7 @@ public class Disassembler {
 	
 	//turns instructionBinary strings into instructionAssembly strings
 	//most of the work
+	//
 	void handleBinary()
 	{
 		return;
