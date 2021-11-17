@@ -8,8 +8,12 @@
 #include <endian.h>
 #include <cstring>
 #include <bitset>
+#include <vector>
 
-void decode(uint32_t instruction);
+void decode();
+
+std::vector<std::string> machine;
+std::vector<std::string> assembly;
 
 int main(int argc, char *argv[])
 {
@@ -37,14 +41,136 @@ int main(int argc, char *argv[])
     for (int i = 0; i < (buf.st_size / 4); i++) {
         program[i] = be32toh(program[i]);
         std::string str = std::bitset<32>(program[i]).to_string();
-        std::cout << str << std::endl;
-        decode(program[i]);
+        machine.push_back(str);
     }
+    decode();
 
     return 0;
 }
 
-void decode(uint32_t instruction)
+void decode()
 {
-    printf("made it here\n");
+    for(int i = 0; i < machine.size(); i++)
+    {
+        std::cout << machine.at(i) << std::endl;
+        std::string opCode = machine.at(i).substr(0, 11);
+        std::cout << opCode << std::endl;
+        int value = stoi(opCode, 0, 2);
+        std::cout << value << std::endl;
+        
+        
+        if(value <= 159)
+            std::cout << "Error: invalid instruction" << std::endl;
+        
+        else if(value >= 160 && value <= 191) // B //
+        {
+            
+        }
+        else if(value >= 672 && value <= 679) // B.cond //
+        {
+            
+        }
+        else if(value >= 712 && value <= 713) // ORRI //
+        {
+            
+        }
+        else if(value >= 840 && value <= 841) // EORI //
+        {
+            
+        }
+        else if(value == 1104) // AND //
+        {
+            
+        }
+        else if(value == 1112) // ADD //
+        {
+            
+        }
+        else if(value >= 1160 && value <= 1161) // ADDI //
+        {
+            
+        }
+        else if(value >= 1168 && value <= 1169) // ANDI //
+        {
+            
+        }
+        else if(value >= 1184 && value <= 1215) // BL //
+        {
+            
+        }
+        else if(value == 1360) // ORR //
+        {
+            
+        }
+        else if(value >= 1440 && value <= 1447) // CBZ //
+        {
+            
+        }
+        else if(value >= 1448 && value <= 1455) // CBNZ //
+        {
+            
+        }
+        else if(value == 1616) // EOR //
+        {
+            
+        }
+        else if(value == 1624) // SUB //
+        {
+            
+        }
+        else if(value >= 1672 && value <= 1673) // SUBI //
+        {
+            
+        }
+        else if(value == 1690) // LSR //
+        {
+            
+        }
+        else if(value == 1691) // LSL //
+        {
+            
+        }
+        else if(value == 1712) // BR //
+        {
+            
+        }
+        else if(value == 1880) // SUBS //
+        {
+            
+        }
+        else if(value >= 1928 && value <= 1929) // SUBIS //
+        {
+            
+        }
+        else if(value == 1984) // STUR //
+        {
+            
+        }
+        else if(value == 1986) // LDUR //
+        {
+            
+        }
+        else if(value == 2044) // PRNL //
+        {
+            
+        }
+        else if(value == 2045) // PRNT //
+        {
+            
+        }
+        else if(value == 2046) // DUMP //
+        {
+            
+        }
+        else if(value == 2047) // HALT //
+        {
+            
+        }
+        //TODO
+        /*else if(value == ??) // MUL //
+        {
+
+        }
+        */
+    }
 }
