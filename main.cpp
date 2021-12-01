@@ -170,7 +170,8 @@ void decode()
         }
         else if(value == 2044) // PRNL //
         {
-
+            std::string toAdd = "PRNL";
+            assembly.push_back(toAdd);
         }
         else if(value == 2045) // PRNT //
         {
@@ -178,11 +179,13 @@ void decode()
         }
         else if(value == 2046) // DUMP //
         {
-            
+            std::string toAdd = "DUMP";
+            assembly.push_back(toAdd);
         }
         else if(value == 2047) // HALT //
         {
-
+            std::string toAdd = "HALT";
+            assembly.push_back(toAdd);
         }
         //TODO
         /*else if(value == ??) // MUL //
