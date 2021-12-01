@@ -6,5 +6,4 @@ To use the sh files:
 Build first, run:
 sh build.sh
 
-Then run,
-sh run.sh <machineCodeFile>
+sh run.sh "machineCodeFile"
