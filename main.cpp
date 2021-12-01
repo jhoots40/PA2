@@ -11,6 +11,7 @@
 #include <vector>
 
 void decode();
+void print();
 
 std::vector<std::string> machine;
 std::vector<std::string> assembly;
@@ -22,19 +23,19 @@ int main(int argc, char *argv[])
         printf("incorrect amount of arguments\n");
         return -1;
     }
-    
+
     struct stat results;
-        
+
     if (stat(argv[1], &results) == 0)
         printf("The size of the file is %d bytes\n", results.st_size);
     else
         printf("an error has occured");
-    
+
     struct stat buf;
-    
+
     int fd;
     uint32_t *program;
-    
+
     fd = open(argv[1], O_RDONLY);
     fstat(fd, &buf);
     program = (uint32_t*) mmap(NULL, buf.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
@@ -44,6 +45,7 @@ int main(int argc, char *argv[])
         machine.push_back(str);
     }
     decode();
+    print();
 
     return 0;
 }
@@ -52,119 +54,126 @@ void decode()
 {
     for(int i = 0; i < machine.size(); i++)
     {
-        std::cout << machine.at(i) << std::endl;
-        std::string opCode = machine.at(i).substr(0, 11);
-        std::cout << opCode << std::endl;
+        std::string binary = machine.at(i);
+        std::cout << binary << std::endl;
+        std::string opCode = binary.substr(0, 11);
         int value = stoi(opCode, 0, 2);
-        std::cout << value << std::endl;
-        
-        
+
+
         if(value <= 159)
             std::cout << "Error: invalid instruction" << std::endl;
-        
         else if(value >= 160 && value <= 191) // B //
         {
-            
+
         }
         else if(value >= 672 && value <= 679) // B.cond //
         {
-            
+
         }
         else if(value >= 712 && value <= 713) // ORRI //
         {
-            
+
         }
         else if(value >= 840 && value <= 841) // EORI //
         {
-            
+
         }
         else if(value == 1104) // AND //
         {
-            
+
         }
         else if(value == 1112) // ADD //
         {
-            
+
         }
         else if(value >= 1160 && value <= 1161) // ADDI //
         {
-            
+            std::string toAdd = "ADDI";
+            std::string immediateString = binary.substr(10, 12);
+            std::string rnString = binary.substr(22, 5);
+            std::string rdString = binary.substr(27, 5);
+            int immediate = stoi(immediateString, 0, 2);
+            int rn = stoi(rnString, 0, 2);
+            int rd = stoi(rdString, 0, 2);
+
+            toAdd = toAdd + " X" + std::to_string(rd) + ", X" + std::to_string(rn) + ", #" + std::to_string(immediate);
+            assembly.push_back(toAdd);
         }
         else if(value >= 1168 && value <= 1169) // ANDI //
         {
-            
+
         }
         else if(value >= 1184 && value <= 1215) // BL //
         {
-            
+
         }
         else if(value == 1360) // ORR //
         {
-            
+
         }
         else if(value >= 1440 && value <= 1447) // CBZ //
         {
-            
+
         }
         else if(value >= 1448 && value <= 1455) // CBNZ //
         {
-            
+
         }
         else if(value == 1616) // EOR //
         {
-            
+
         }
         else if(value == 1624) // SUB //
         {
-            
+
         }
         else if(value >= 1672 && value <= 1673) // SUBI //
         {
-            
+
         }
         else if(value == 1690) // LSR //
         {
-            
+
         }
         else if(value == 1691) // LSL //
         {
-            
+
         }
         else if(value == 1712) // BR //
         {
-            
+
         }
         else if(value == 1880) // SUBS //
         {
-            
+
         }
         else if(value >= 1928 && value <= 1929) // SUBIS //
         {
-            
+
         }
         else if(value == 1984) // STUR //
         {
-            
+
         }
         else if(value == 1986) // LDUR //
         {
-            
+
         }
         else if(value == 2044) // PRNL //
         {
-            
+
         }
         else if(value == 2045) // PRNT //
         {
-            
+
         }
         else if(value == 2046) // DUMP //
         {
-            
+
         }
         else if(value == 2047) // HALT //
         {
-            
+
         }
         //TODO
         /*else if(value == ??) // MUL //
@@ -172,5 +181,13 @@ void decode()
 
         }
         */
+    }
+}
+
+void print()
+{
+    for(int i = 0; i < assembly.size(); i++)
+    {
+        std::cout << assembly.at(i) << std::endl;
     }
 }
