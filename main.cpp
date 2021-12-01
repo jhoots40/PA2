@@ -62,11 +62,11 @@ void decode()
 
         if(value <= 159)
             std::cout << "Error: invalid instruction" << std::endl;
-        else if(value >= 160 && value <= 191) // B //
+        else if(value >= 160 && value <= 191) // B // jake
         {
 
         }
-        else if(value >= 672 && value <= 679) // B.cond //
+        else if(value >= 672 && value <= 679) // B.cond // jake
         {
 
         }
@@ -103,7 +103,7 @@ void decode()
         {
 
         }
-        else if(value >= 1184 && value <= 1215) // BL //
+        else if(value >= 1184 && value <= 1215) // BL // jake
         {
 
         }
@@ -111,11 +111,11 @@ void decode()
         {
 
         }
-        else if(value >= 1440 && value <= 1447) // CBZ //
+        else if(value >= 1440 && value <= 1447) // CBZ // jake
         {
 
         }
-        else if(value >= 1448 && value <= 1455) // CBNZ //
+        else if(value >= 1448 && value <= 1455) // CBNZ // jake
         {
 
         }
@@ -148,7 +148,7 @@ void decode()
         {
 
         }
-        else if(value == 1712) // BR //
+        else if(value == 1712) // BR // Jake
         {
 
         }
@@ -160,11 +160,11 @@ void decode()
         {
 
         }
-        else if(value == 1984) // STUR //
+        else if(value == 1984) // STUR // jake
         {
 
         }
-        else if(value == 1986) // LDUR //
+        else if(value == 1986) // LDUR // jake
         {
 
         }
@@ -178,7 +178,7 @@ void decode()
         }
         else if(value == 2046) // DUMP //
         {
-
+            
         }
         else if(value == 2047) // HALT //
         {
