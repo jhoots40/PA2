@@ -129,7 +129,16 @@ void decode()
         }
         else if(value >= 1672 && value <= 1673) // SUBI //
         {
+            std::string toAdd = "SUBI";
+            std::string immediateString = binary.substr(10, 12);
+            std::string rnString = binary.substr(22, 5);
+            std::string rdString = binary.substr(27, 5);
+            int immediate = stoi(immediateString, 0, 2);
+            int rn = stoi(rnString, 0, 2);
+            int rd = stoi(rdString, 0, 2);
 
+            toAdd = toAdd + " X" + std::to_string(rd) + ", X" + std::to_string(rn) + ", #" + std::to_string(immediate);
+            assembly.push_back(toAdd);
         }
         else if(value == 1690) // LSR //
         {
