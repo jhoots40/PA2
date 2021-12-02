@@ -9,9 +9,14 @@
 #include <cstring>
 #include <bitset>
 #include <vector>
+#include <math.h>
 
 void decode();
 void print();
+int twosCompToDecimal(char *binary, int significantBits);
+std::string bCond(int val);
+void handleLabel(int location, int currentPos);
+int numLabel = 0;
 
 std::vector<std::string> machine;
 std::vector<std::string> assembly;
@@ -55,41 +60,56 @@ void decode()
     for(int i = 0; i < machine.size(); i++)
     {
         std::string binary = machine.at(i);
-        std::cout << binary << std::endl;
         std::string opCode = binary.substr(0, 11);
         int value = stoi(opCode, 0, 2);
+        
+        std::cout << i + 1 << ".)  " << binary << "     " << value << std::endl;
 
 
         if(value <= 159)
             std::cout << "Error: invalid instruction" << std::endl;
         else if(value >= 160 && value <= 191) // B // jake
         {
-
+            std::string toAdd = "B";
+            std::string addressString = binary.substr(6, 26);
+            int address = twosCompToDecimal((char*) addressString.c_str(), 26);
+            
+            toAdd = toAdd + " " + std::to_string(address);
+            assembly.push_back(toAdd);
+            handleLabel(address, assembly.size() - 1);
         }
         else if(value >= 672 && value <= 679) // B.cond // jake
         {
-
+            std::string toAdd = "B.";
+            std::string addressString = binary.substr(8, 19);
+            std::string rtString = binary.substr(27, 5);
+            int address = twosCompToDecimal((char*) addressString.c_str(), 19);
+            int rt = stoi(rtString, 0, 2);
+            
+            toAdd = toAdd + bCond(rt) + " " + std::to_string(address);
+            assembly.push_back(toAdd);
+            handleLabel(address, assembly.size() - 1);
         }
-        else if(value >= 712 && value <= 713) // ORRI // (should work, won't print, machine code might be wrong)
+        else if(value >= 1424 && value <= 1425) // ORRI // (should work, won't print, machine code might be wrong)
         {
             std::string toAdd = "ORRI";
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
             toAdd = toAdd + " X" + std::to_string(rd) + ", X" + std::to_string(rn) + ", #" + std::to_string(immediate);
             assembly.push_back(toAdd);
         }
-        else if(value >= 840 && value <= 841) // EORI // (should work, won't print, machine code might be wrong)
+        else if(value >= 1680 && value <= 1681) // EORI // (should work, won't print, machine code might be wrong)
         {
             std::string toAdd = "EORI";
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
@@ -128,7 +148,7 @@ void decode()
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
@@ -141,7 +161,7 @@ void decode()
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
@@ -150,7 +170,13 @@ void decode()
         }
         else if(value >= 1184 && value <= 1215) // BL // jake
         {
-
+            std::string toAdd = "BL";
+            std::string addressString = binary.substr(6, 26);
+            int address = twosCompToDecimal((char*) addressString.c_str(), 26);
+            
+            toAdd = toAdd + " " + std::to_string(address);
+            assembly.push_back(toAdd);
+            handleLabel(address, assembly.size() - 1);
         }
         else if(value == 1360) // ORR //
         {
@@ -167,11 +193,27 @@ void decode()
         }
         else if(value >= 1440 && value <= 1447) // CBZ // jake
         {
-
+            std::string toAdd = "CBZ X";
+            std::string addressString = binary.substr(8, 19);
+            std::string rtString = binary.substr(27, 5);
+            int address = twosCompToDecimal((char*) addressString.c_str(), 19);
+            int rt = stoi(rtString, 0, 2);
+            
+            toAdd = toAdd + std::to_string(rt) + ", " + std::to_string(address);
+            assembly.push_back(toAdd);
+            handleLabel(address, assembly.size() - 1);
         }
         else if(value >= 1448 && value <= 1455) // CBNZ // jake
         {
-
+            std::string toAdd = "CBNZ X";
+            std::string addressString = binary.substr(8, 19);
+            std::string rtString = binary.substr(27, 5);
+            int address = twosCompToDecimal((char*) addressString.c_str(), 19);
+            int rt = stoi(rtString, 0, 2);
+            
+            toAdd = toAdd + std::to_string(rt) + ", " + std::to_string(address);
+            assembly.push_back(toAdd);
+            handleLabel(address, assembly.size() - 1);
         }
         else if(value == 1616) // EOR //
         {
@@ -205,7 +247,7 @@ void decode()
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
@@ -240,7 +282,16 @@ void decode()
         }
         else if(value == 1712) // BR // Jake
         {
-
+            std::string toAdd = "BR";
+            std::string rmString = binary.substr(11, 5);
+            std::string rnString = binary.substr(22, 5);
+            std::string rdString = binary.substr(27, 5);
+            int rm = stoi(rmString, 0, 2);
+            int rn = stoi(rnString, 0, 2);
+            int rd = stoi(rdString, 0, 2);
+            
+            toAdd = toAdd + " X" + std::to_string(rn);
+            assembly.push_back(toAdd);
         }
         else if(value == 1880) // SUBS //
         {
@@ -261,7 +312,7 @@ void decode()
             std::string immediateString = binary.substr(10, 12);
             std::string rnString = binary.substr(22, 5);
             std::string rdString = binary.substr(27, 5);
-            int immediate = stoi(immediateString, 0, 2);
+            int immediate = twosCompToDecimal((char*) immediateString.c_str(), 12);
             int rn = stoi(rnString, 0, 2);
             int rd = stoi(rdString, 0, 2);
 
@@ -342,24 +393,110 @@ void print()
     }
 }
 
-int binTwosComplementToSignedDecimal(char binary[],int significantBits)
+int twosCompToDecimal(char *binary, int significantBits)
 {
     int power = pow(2,significantBits-1);
     int sum = 0;
-    int i;
 
-    for (i=0; i<significantBits; ++i)
+    for(int i = 0; i < significantBits; i++)
     {
-        if ( i==0 && binary[i]!='0')
+        if(i == 0 && binary[i] != '0')
         {
             sum = power * -1;
         }
         else
         {
-            sum += (binary[i]-'0')*power;//The -0 is needed
+            sum += (binary[i] - '0') * power;
         }
         power /= 2;
     }
 
     return sum;
 }
+
+std::string bCond(int val)
+{
+    if(val == 0)
+    {
+        return "EQ";
+    }
+    else if(val == 1)
+    {
+        return "NE";
+    }
+    else if(val == 2)
+    {
+        return "HS";
+    }
+    else if(val == 3)
+    {
+        return "LO";
+    }
+    else if(val == 4)
+    {
+        return "MI";
+    }
+    else if(val == 5)
+    {
+        return "PL";
+    }
+    else if(val == 6)
+    {
+        return "VS";
+    }
+    else if(val == 7)
+    {
+        return "VC";
+    }
+    else if(val == 8)
+    {
+        return "HI";
+    }
+    else if(val == 9)
+    {
+        return "LS";
+    }
+    else if(val == 10)
+    {
+        return "GE";
+    }
+    else if(val == 11)
+    {
+        return "LT";
+    }
+    else if(val == 12)
+    {
+        return "GT";
+    }
+    else if(val == 13)
+    {
+        return "LE";
+    }
+    return "Error";
+}
+
+void handleLabel(int location, int currentPos) // sorry this code is filthy
+{
+    std::vector<std::string>::iterator it;
+    
+    it = assembly.begin();
+    
+    int position = currentPos + location;
+    if(position > 0)
+        position = position - 1;
+    std::string labelCheck = assembly.at(position);
+    labelCheck = labelCheck.substr(0, 5);
+    if(!labelCheck.compare("Label"))
+    {
+        return;
+    }
+    ++numLabel;
+    for(int i = 0; i < position; i++)
+    {
+        it++;
+    }
+    std::string toInsert = "Label " + std::to_string(numLabel) + ":";
+    it = assembly.insert(it, toInsert);
+    return;
+}
+
