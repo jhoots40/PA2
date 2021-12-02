@@ -10,31 +10,34 @@
 #include <bitset>
 #include <vector>
 #include <math.h>
+#include <algorithm>
 
 void decode();
 void print();
 int twosCompToDecimal(char *binary, int significantBits);
 std::string bCond(int val);
 void handleLabel(int location, int currentPos);
+void insertLabels();
 int numLabel = 0;
 
 std::vector<std::string> machine;
 std::vector<std::string> assembly;
+std::vector<int> labelIndices;
 
 int main(int argc, char *argv[])
 {
     if(argc != 2)
     {
-        printf("incorrect amount of arguments\n");
+        std::cout << "Incorrect amount of arguments\n" << std::endl;
         return -1;
     }
 
     struct stat results;
 
     if (stat(argv[1], &results) == 0)
-        printf("The size of the file is %d bytes\n", results.st_size);
+        std::cout << "The size of the file is " << results.st_size << " bytes\n" << std::endl;
     else
-        printf("an error has occured");
+        std::cout << "an error has occured" << std::endl;
 
     struct stat buf;
 
@@ -50,6 +53,7 @@ int main(int argc, char *argv[])
         machine.push_back(str);
     }
     decode();
+    insertLabels();
     print();
 
     return 0;
@@ -62,8 +66,6 @@ void decode()
         std::string binary = machine.at(i);
         std::string opCode = binary.substr(0, 11);
         int value = stoi(opCode, 0, 2);
-        
-        std::cout << i + 1 << ".)  " << binary << "     " << value << std::endl;
 
 
         if(value <= 159)
@@ -475,28 +477,42 @@ std::string bCond(int val)
     return "Error";
 }
 
-void handleLabel(int location, int currentPos) // sorry this code is filthy
+void handleLabel(int location, int currentPos)
 {
-    std::vector<std::string>::iterator it;
-    
-    it = assembly.begin();
-    
     int position = currentPos + location;
     if(position > 0)
         position = position - 1;
-    std::string labelCheck = assembly.at(position);
-    labelCheck = labelCheck.substr(0, 5);
-    if(!labelCheck.compare("Label"))
+    
+    bool unique = true;
+    for(int i = 0; i < labelIndices.size(); i++)
     {
-        return;
+        if(labelIndices.at(i) == position)
+            unique = false;
     }
-    ++numLabel;
-    for(int i = 0; i < position; i++)
+    
+    if(unique)
     {
-        it++;
+        labelIndices.push_back(position);
     }
-    std::string toInsert = "Label " + std::to_string(numLabel) + ":";
-    it = assembly.insert(it, toInsert);
-    return;
+    
 }
 
+void insertLabels()
+{
+    std::sort (labelIndices.begin(), labelIndices.end());
+    for(int i = 0; i < labelIndices.size(); i++)
+    {
+        std::vector<std::string>::iterator it;
+        it = assembly.begin();
+        
+        ++numLabel;
+        for(int j = 0; j <= labelIndices.at(i) + i; j++)
+        {
+            if(labelIndices.at(i) == 0)
+                break;
+            it++;
+        }
+        std::string toInsert = "\nLabel " + std::to_string(numLabel) + ":";
+        it = assembly.insert(it, toInsert);
+    }
+}
