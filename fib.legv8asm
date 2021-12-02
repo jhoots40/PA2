@@ -1,0 +1,80 @@
+    ADDI X0, XZR, #22
+    BL fib
+    PRNT X0
+    DUMP
+    PRNL
+    ADDI X0, XZR, #0
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #1
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #2
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #3
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #4
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #5
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #6
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #7
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #8
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #9
+    BL fib
+    PRNT X0
+    ADDI X0, XZR, #10
+    BL fib
+    PRNT X0
+    B end
+
+  fib:
+    //No stack manipulation, because we don't change anything!
+//    SUBI X9, X0, #2
+//    CBZ X9, done
+//    SUBI X9, X0, #1
+//    CBNZ X9, body
+    CBZ X0, done
+    SUBI X9, X0, #1
+    CBNZ X9, body
+  done:
+    BR LR //Value is already in X0; nothing to copy
+  body:
+
+    //stack
+    SUBI SP, SP, #24
+    STUR X20, [SP, #0]
+    STUR X19, [SP, #8]
+    STUR LR, [SP, #16]
+
+    //Save paremeter
+    ADD X19, X0, XZR
+    //Set paremeter for first call, fib(n - 1)
+    SUBI X0, X19, #1
+    BL fib
+    //save return value
+    ADD X20, X0, XZR
+    //Set paremeter for second call, fib(n - 2)
+    SUBI X0, X19, #2
+    BL fib
+    //Put return in X0
+    ADD X0, X0, X20
+
+    //stack
+    LDUR X20, [SP, #0]
+    LDUR X19, [SP, #8]
+    LDUR LR, [SP, #16]
+    ADDI SP, SP, #24
+
+    BR LR
+end:

@@ -1,0 +1,81 @@
+//Jacob Houts NetID: jhoots40
+//Rowan Collins NetID: rowan
+
+main:
+ADD X0, XZR, XZR //starts array address at 0
+ADDI X1, XZR, #3 //sets length to 10
+BL fill
+BL insertionsort
+B done
+
+fill:
+ADD X9, XZR, XZR //i = 0
+ADD X10, X1, XZR //X10 = length
+loop: LSL X11, X9, #3 //i * 8
+ADD X11, X11, X0  
+STUR X10, [X11, #0]
+SUBI X10, X10, #1 //decrement toInsert
+ADDI X9, X9, #1 //increment i
+SUB X12, X9, X1 //X12 = length - i
+CBNZ X12, loop //if X12 !=0 then loop
+BR LR
+
+insertionsort: // this works as expected
+SUBI SP, SP, #8
+STUR LR, [SP, #0] 
+ADDI X2, XZR, #1 //int i = 1
+SUBI X6, X1, #1 //length - 1
+loop2: SUBS X11, X6, X2
+B.LE exit
+BL insertSortedPosition //pass in X0, X2, X6
+ADDI X2, X2, #1
+B loop2
+exit:
+LDUR LR, [SP, #0]
+ADDI SP, SP, #8
+BR LR
+
+insertSortedPosition: // arr is stored in X0, pos is stored in X2, length - 1 is stored in X6
+SUBI SP, SP, #8
+STUR LR, [SP, #0] 
+LSL X9, X2, #3 //i * 8
+LDUR X4, [X9, #0] // used in the future as a parameter = arr[i]
+BL findSortedPosition //pass in X0, X4, X6
+BL shiftRight //pass in X0, X5, X2
+LSL X10, X5, #3 // pos found in array * 8
+ADD X11, X10, X0 //gets address of arr[p]
+STUR X4, [X11, #0]
+LDUR LR, [SP, #0]
+ADDI SP, SP, #8
+BR LR
+
+findSortedPosition: //base address in X0, val in X4, final in X6, result will be stored in X5
+ADD X9, XZR, XZR // int i = 0
+loop3: LSL X10, X9, #3 // X10 = i * 8
+ADD X10, X10, X0 //X10 gets address of arr[i]
+LDUR X11, [X10, #0] //X11 = arr[i]
+SUBS X12, X11, X4 //sets flags
+B.GE exit2 //if X11 >= X4 then exit
+ADDI X9, X9, #1 //increment i
+SUB X13, X6, X9
+CBNZ X13, loop3
+exit2: ADD X5, X9, XZR
+BR LR
+
+shiftRight: //arr is stored in X0, pos is stored in X5, final is stored X2
+SUBI X9, X2, #1 //int i = final - 1
+loop4:
+SUBS X10, X9, X5
+B.LT exit3 // if i < pos then exit
+LSL X11, X9, #3 // i = i * 8
+ADD X12, X11, X0 //X12 = arr[i]
+LDUR X13, [X12, #0] //X13 = arr[i] 
+STUR X13, [X12, #8] //arr[i + 1] = arr[i]
+SUBI X9, X9, #1 //decrement i
+B loop4
+exit3:
+BR LR
+
+
+done:
+DUMP
